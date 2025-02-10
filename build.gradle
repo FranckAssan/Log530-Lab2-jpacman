@@ -4,8 +4,8 @@ plugins {
     id 'jacoco'
     id 'checkstyle'
     id 'pmd'
-    id 'com.github.spotbugs' version '1.7.1'
-    id 'org.sonarqube' version '3.1.1'
+    id 'com.github.spotbugs' version '5.0.14' // Updated version
+    id "org.sonarqube" version "6.0.1.5171"
 }
 
 sourceSets {
@@ -29,18 +29,29 @@ repositories {
     mavenCentral()
 }
 
+//dependencies {
+//    // https://mvnrepository.com/artifact/com.google.guava/guava
+//    implementation group: 'com.google.guava', name: 'guava', version: '33.4.0-jre'
+//
+////    compile "com.google.guava:guava:$guavaVersion"
+//
+//
+//    compileOnly "com.github.spotbugs:spotbugs-annotations:$spotbugsAnnotationsVersion"
+//
+//    testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
+//    testCompile "org.mockito:mockito-core:$mockitoVersion"
+//    testCompile "org.assertj:assertj-core:$assertjVersion"
+//}
 dependencies {
-    compile "com.google.guava:guava:$guavaVersion"
-
-
+    implementation 'com.google.guava:guava:33.4.0-jre'
+    implementation 'com.github.spotbugs:spotbugs:4.9.0'
     compileOnly "com.github.spotbugs:spotbugs-annotations:$spotbugsAnnotationsVersion"
-
     testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
-    testCompile "org.mockito:mockito-core:$mockitoVersion"
-    testCompile "org.assertj:assertj-core:$assertjVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
+    testImplementation "org.assertj:assertj-core:$assertjVersion"
 }
 
-task defaultTest(type: Test) {
+tasks.register('defaultTest', Test) {
     testClassesDirs = sourceSets.defaultTest.output.classesDirs
     classpath = sourceSets.defaultTest.runtimeClasspath
 }
@@ -62,8 +73,8 @@ jacoco {
 jacocoTestReport {
     executionData tasks.withType(Test)
     reports {
-        csv.enabled true
-        xml.enabled true
+        csv.required.set(true)
+        xml.required.set(true)
     }
 }
 
@@ -77,25 +88,33 @@ pmd {
     ruleSets = []
 }
 
-tasks.withType(com.github.spotbugs.SpotBugsTask) {
-    reports {
-        xml.enabled = false
-        html.enabled = true
+//tasks.withType(com.github.spotbugs) {
+//    reports {
+//        xml.required.set(true)
+//        html.required.set(true)
+//    }
+//}
+
+// https://github.com/spotbugs/spotbugs-gradle-plugin
+tasks.spotbugsMain {
+    reports.create('html') {
+        required = true
+        outputLocation = file("build/reports/spotbugs.html")
     }
 }
 
-task staticAnalysis(type: GradleBuild) {
+tasks.register('staticAnalysis', GradleBuild) {
     tasks = [
-        'clean',
-        'checkstyleMain',
-        'checkstyleTest',
-        'checkstyleDefaultTest',
-        'pmdMain',
-        'pmdTest',
-        'pmdDefaultTest',
-        'spotbugsMain',
-        'spotbugsTest',
-        'spotbugsDefaultTest',
+            'clean',
+            'checkstyleMain',
+            'checkstyleTest',
+            'checkstyleDefaultTest',
+            'pmdMain',
+            'pmdTest',
+            'pmdDefaultTest',
+            'spotbugsMain',
+            'spotbugsTest',
+            'spotbugsDefaultTest',
     ]
 }
 

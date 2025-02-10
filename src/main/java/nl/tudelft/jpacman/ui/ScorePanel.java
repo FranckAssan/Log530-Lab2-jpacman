@@ -1,12 +1,9 @@
 package nl.tudelft.jpacman.ui;
 
 import java.awt.GridLayout;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import nl.tudelft.jpacman.level.Player;
 
@@ -27,7 +24,9 @@ public class ScorePanel extends JPanel {
     /**
      * The map of players and the labels their scores are on.
      */
-    private final Map<Player, JLabel> scoreLabels;
+    private final Map<Player, List<JLabel>> scoreLabels;
+
+//    private final Map<Player, JLabel> nbDeVieLabels;
 
     /**
      * The default way in which the score is shown.
@@ -35,10 +34,14 @@ public class ScorePanel extends JPanel {
     public static final ScoreFormatter DEFAULT_SCORE_FORMATTER =
         (Player player) -> String.format("Score: %3d", player.getScore());
 
+    public static final ScoreFormatter DEFAULT_VIE_FORMATTER =
+        (Player player) -> String.format("Vie: %3d", player.getNbVies());
+
     /**
      * The way to format the score information.
      */
     private ScoreFormatter scoreFormatter = DEFAULT_SCORE_FORMATTER;
+    private ScoreFormatter vieFormatter = DEFAULT_VIE_FORMATTER;
 
     /**
      * Creates a new score panel with a column for each player.
@@ -50,31 +53,45 @@ public class ScorePanel extends JPanel {
         super();
         assert players != null;
 
-        setLayout(new GridLayout(2, players.size()));
+        setLayout(new GridLayout(3, players.size()));
 
         for (int i = 1; i <= players.size(); i++) {
-            add(new JLabel("Player " + i, JLabel.CENTER));
+            add(new JLabel("Player " + i, SwingConstants.CENTER));
         }
+
         scoreLabels = new LinkedHashMap<>();
+
         for (Player player : players) {
-            JLabel scoreLabel = new JLabel("0", JLabel.CENTER);
-            scoreLabels.put(player, scoreLabel);
+            JLabel scoreLabel = new JLabel("0", SwingConstants.CENTER);
+            JLabel vieLabel = new JLabel(String.valueOf(player.getNbVies()),
+                SwingConstants.CENTER);
+
+            List<JLabel> labelList = new LinkedList<>();
+            labelList.add(scoreLabel);
+            labelList.add(vieLabel);
+            scoreLabels.put(player, labelList);
             add(scoreLabel);
+            add(vieLabel);
         }
+
     }
 
     /**
      * Refreshes the scores of the players.
      */
     protected void refresh() {
-        for (Map.Entry<Player, JLabel> entry : scoreLabels.entrySet()) {
+        for (Map.Entry<Player, List<JLabel>> entry : scoreLabels.entrySet()) {
             Player player = entry.getKey();
             String score = "";
             if (!player.isAlive()) {
                 score = "You died. ";
             }
             score += scoreFormatter.format(player);
-            entry.getValue().setText(score);
+            entry.getValue().get(0).setText(score);
+
+            String vie = "";
+            vie += vieFormatter.format(player);
+            entry.getValue().get(1).setText(vie);
         }
     }
 
@@ -90,6 +107,7 @@ public class ScorePanel extends JPanel {
          */
         String format(Player player);
     }
+
 
     /**
      * Let the score panel use a dedicated score formatter.

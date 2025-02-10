@@ -13,7 +13,7 @@ public class DefaultPointCalculator implements PointCalculator {
 
     @Override
     public void collidedWithAGhost(Player player, Ghost ghost) {
-        // no points for colliding with a ghost
+        player.decreaseVie();
     }
 
     @Override

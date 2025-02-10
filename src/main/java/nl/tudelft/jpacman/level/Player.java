@@ -3,6 +3,7 @@ package nl.tudelft.jpacman.level;
 import java.util.Map;
 
 import nl.tudelft.jpacman.board.Direction;
+import nl.tudelft.jpacman.board.Square;
 import nl.tudelft.jpacman.board.Unit;
 import nl.tudelft.jpacman.sprite.AnimatedSprite;
 import nl.tudelft.jpacman.sprite.Sprite;
@@ -18,6 +19,8 @@ public class Player extends Unit {
      * The amount of points accumulated by this player.
      */
     private int score;
+
+    private int nbVies;
 
     /**
      * The animations for every direction.
@@ -50,6 +53,7 @@ public class Player extends Unit {
     protected Player(Map<Direction, Sprite> spriteMap, AnimatedSprite deathAnimation) {
         this.score = 0;
         this.alive = true;
+        this.nbVies = 3;
         this.sprites = spriteMap;
         this.deathSprite = deathAnimation;
         deathSprite.setAnimating(false);
@@ -64,10 +68,18 @@ public class Player extends Unit {
         return alive;
     }
 
+    public int getNbVies() {
+        return nbVies;
+    }
+
+    public void setNbVies(int nbVies) {
+        this.nbVies = nbVies;
+    }
+
     /**
      * Sets whether this player is alive or not.
      *
-     * If the player comes back alive, the {@link killer} will be reset.
+     * If the player comes back alive, the {@link } will be reset.
      *
      * @param isAlive
      *            <code>true</code> iff this player is alive.
@@ -127,5 +139,19 @@ public class Player extends Unit {
      */
     public void addPoints(int points) {
         score += points;
+    }
+
+    /**
+     * Reduit la vie du player si collision avec un ghost
+     */
+    public void decreaseVie() {
+        if (this.nbVies == 1) {
+            this.nbVies -= 1;
+            this.alive = false;
+        } else {
+            this.nbVies -= 1;
+            this.alive = true;
+            this.occupy(squaresAheadOf(50));
+        }
     }
 }

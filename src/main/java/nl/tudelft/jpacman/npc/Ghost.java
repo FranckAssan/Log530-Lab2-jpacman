@@ -87,6 +87,7 @@ public abstract class Ghost extends Unit {
      */
      protected abstract Direction randomMove();
 
+
     /**
      * Determines a possible move in a random direction.
      *

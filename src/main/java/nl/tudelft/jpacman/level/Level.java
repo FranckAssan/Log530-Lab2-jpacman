@@ -164,10 +164,8 @@ public class Level {
      * Moves the unit into the given direction if possible and handles all
      * collisions.
      *
-     * @param unit
-     *            The unit to move.
-     * @param direction
-     *            The direction to move the unit in.
+     * @param unit The unit to move.
+     * @param direction The direction to move the unit in.
      */
     public void move(Unit unit, Direction direction) {
         assert unit != null;
